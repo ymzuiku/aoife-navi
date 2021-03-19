@@ -6,6 +6,7 @@ interface NaviElement<T> extends HTMLDivElement {
   push: (url: keyof T, state?: object, ignoreAnime?: boolean) => void;
   replace: (url: keyof T, state?: object) => void;
   pop: (num?: number) => void;
+  go: (num: number) => void;
 }
 
 const pageCss = "navi-page";
@@ -22,12 +23,6 @@ function onPop(lastEle: HTMLElement, nowEle: HTMLElement) {
   lastEle.className = pageCss;
   nowEle.className = pageCss + " navi-move-next";
   nowEle.remove();
-  // setTimeout(() => {
-  //   nowEle.style.opacity = "0";
-  // }, 100);
-  // nowEle.addEventListener("transitionend", () => {
-  //   nowEle.remove();
-  // });
 }
 
 export function Navi<T extends { [key: string]: Function }>(
@@ -107,13 +102,24 @@ export function Navi<T extends { [key: string]: Function }>(
   };
 
   out.pop = async (num = 1) => {
+    if (num > 1) {
+      for (let i = 0; i < num - 1; i++) {
+        if (out.children.length - 1 > 1) {
+          const _ele = out.children.item(out.children.length - 1);
+          if (_ele) {
+            _ele.remove();
+          }
+        }
+      }
+    }
+
     if (out.children.length > 1) {
       popListener();
-      // if (Navi.isWechat) {
-      // } else {
-      //   history.back();
-      // }
     }
+  };
+
+  out.go = async (num = 0) => {
+    out.pop(out.children.length - 1 - num);
   };
 
   const popListener = () => {
