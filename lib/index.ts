@@ -12,16 +12,12 @@ interface NaviElement<T> extends HTMLDivElement {
 const pageCss = "navi-page";
 function onPush(lastEle: HTMLElement, nowEle: HTMLElement, appendFn: Function) {
   lastEle.className = pageCss + " navi-move-last";
-  nowEle.className = pageCss + " navi-move-next";
+  nowEle.className = pageCss;
   appendFn();
-  setTimeout(() => {
-    nowEle.className = pageCss;
-  }, 20);
 }
 
 function onPop(lastEle: HTMLElement, nowEle: HTMLElement) {
   lastEle.className = pageCss;
-  nowEle.className = pageCss + " navi-move-next";
   nowEle.remove();
 }
 
@@ -59,8 +55,8 @@ export function Navi<T extends { [key: string]: Function }>(
 
     (elePage as any).__navi_pathname = pathname;
     (elePage as any).__navi_state = state;
-
     elePage.append(ele);
+    elePage.style.zIndex = out.children.length + "";
     if (!lastEle) {
       elePage.className = pageCss;
       out.append(elePage);
@@ -112,7 +108,6 @@ export function Navi<T extends { [key: string]: Function }>(
         }
       }
     }
-
     if (out.children.length > 1) {
       popListener();
     }
@@ -145,8 +140,6 @@ export function Navi<T extends { [key: string]: Function }>(
     }
   };
 
-  // window.addEventListener("popstate", popListener);
-
   const pathname = location.pathname;
   out.push("/", void 0, true);
   if (pathname !== "/") {
@@ -164,30 +157,35 @@ css`
     height: 100%;
     padding: 0px;
     margin: 0px;
-    position: relative;
+    display: grid;
+    grid-template-areas: "navi-page";
     overflow: hidden;
     background: var(--bg, #fff);
   }
   .navi-page {
+    grid-area: navi-page;
     display: block;
-    position: absolute;
     background: var(--bg, #fff);
     width: 100%;
     height: 100%;
     padding: 0px;
     margin: 0px;
-    overflow: auto;
-    top: 0px;
-    left: 0px;
-    transform: translateY(0%);
-    transition: 0.42s transform var(--navi-ease);
   }
   .navi-move-last {
-    transform: translateY(-20%);
+    display: none;
+  }
+  /* .navi-move-normal {
+    will-change: transform;
+    transform: translateY(0%);
+  }
+  .navi-move-last {
+    will-change: transform;
+    transform: translateY(-25%);
   }
   .navi-move-next {
-    transform: translateY(40%);
-  }
+    will-change: transform;
+    transform: translateY(25%);
+  } */
 `;
 
 Navi.isIos = /(?:iPhone|iPad)/.test(navigator.userAgent);
