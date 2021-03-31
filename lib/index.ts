@@ -12,8 +12,12 @@ interface NaviElement<T> extends HTMLDivElement {
 const pageCss = "navi-page";
 function onPush(lastEle: HTMLElement, nowEle: HTMLElement, appendFn: Function) {
   lastEle.className = pageCss + " navi-move-last";
-  nowEle.className = pageCss;
+  nowEle.className = pageCss + " navi-move-next";
+
   appendFn();
+  setTimeout(() => {
+    nowEle.className = pageCss;
+  }, 40);
 }
 
 function onPop(lastEle: HTMLElement, nowEle: HTMLElement) {
@@ -55,6 +59,7 @@ export function Navi<T extends { [key: string]: Function }>(
 
     (elePage as any).__navi_pathname = pathname;
     (elePage as any).__navi_state = state;
+
     elePage.append(ele);
     elePage.style.zIndex = out.children.length + "";
     if (!lastEle) {
@@ -170,23 +175,23 @@ css`
     height: 100%;
     padding: 0px;
     margin: 0px;
+    transition: transform 0.5s var(--navi-ease);
+    will-change: unset;
   }
-  .navi-move-last {
-    display: none;
-  }
-  /* .navi-move-normal {
+  .navi-move-normal {
     will-change: transform;
     transform: translateY(0%);
   }
-  .navi-move-last {
+  /* .navi-move-last {
     will-change: transform;
-    transform: translateY(-25%);
-  }
+    transform: translateY(-21%);
+  } */
   .navi-move-next {
     will-change: transform;
-    transform: translateY(25%);
-  } */
+    transform: translateY(21%);
+  }
 `;
 
 Navi.isIos = /(?:iPhone|iPad)/.test(navigator.userAgent);
-Navi.isWechat = /MicroMessenger/.test(navigator.userAgent);
+// Navi.isWechat = /MicroMessenger/.test(navigator.userAgent);
+Navi.isWechat = true;
